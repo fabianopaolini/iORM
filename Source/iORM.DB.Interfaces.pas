@@ -83,7 +83,12 @@ type
 {$IFNDEF ioDelphiProfessional}
     ctSQLServer,
 {$ENDIF}
-    ctMySQL, ctHTTP);
+    ctMySQL,
+//Start_FP
+    ctPostgreSQL,
+//Stop_FP
+    ctHTTP);
+
 
   TioKeyGenerationTime = (kgtUndefined, kgtAfterInsert, kgtBeforeInsert);
 

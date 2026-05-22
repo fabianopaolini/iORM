@@ -64,11 +64,15 @@ implementation
 uses
   iORM.DBBuilder.Schema, iORM.DBBuilder.Schema.Table, iORM.DBBuilder.Schema.Field, iORM.DBBuilder.Schema.FK,
   iORM.DBBuilder.Schema.Builder, iORM.DB.ConnectionContainer, iORM.DB.Interfaces, iORM.DBBuilder.SqlGenerator.Firebird,
-  iORM.DBBuilder.SqlGenerator.SqLite, iORM.DBBuilder.Strategy.WithoutAlterTable,
+  iORM.DBBuilder.SqlGenerator.SqLite,
+  iORM.DBBuilder.Strategy.WithoutAlterTable,
   iORM.DBBuilder.Strategy.WithAlterTable, iORM.Exceptions, iORM.DBBuilder.DBAnalyzer, iORM.DBBuilder.Engine,
 {$IFNDEF ioDelphiProfessional}
   iORM.DBBuilder.SqlGenerator.MSSqlServer,
 {$ENDIF}
+//Start_FP
+  iORM.DBBuilder.SqlGenerator.PostgreSQL,
+//Stop_FP
   iORM.DBBuilder.Schema.Field.ClassInfo;
 
 
@@ -137,6 +141,10 @@ begin
     ctSQLServer:
       Result := TioDBBuilderSqlGenMSSqlServer.Create(ASchema);
 {$ENDIF}
+//Start_FP
+    ctPostgreSQL:
+      Result := TioDBBuilderSqlGenPostgreSQL.Create(ASchema);
+//Stop_FP
   else
     raise EioGenericException.Create(ClassName, 'NewSqlGenerator', 'Connection type not found');
   end;
@@ -146,7 +154,11 @@ class function TioDBBuilderFactory.NewStrategy(const ASchema: IioDBBuilderSchema
   : IioDBBuilderStrategy;
 begin
   case TioConnectionManager.GetConnectionInfo(ASchema.ConnectionDefName).ConnectionType of
-    ctFirebird {$IFNDEF ioDelphiProfessional}, ctSQLServer {$ENDIF}:
+    ctFirebird {$IFNDEF ioDelphiProfessional}, ctSQLServer {$ENDIF}
+//Start_FP
+    , ctPostgreSQL
+//Stop_FP
+    :
       Result := TioDBBuilderStrategyWithAlter.Create(ASchema, ASqlGenerator);
     ctSQLite:
       Result := TioDBBuilderStrategyWithoutAlter.Create(ASchema, ASqlGenerator);

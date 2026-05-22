@@ -131,6 +131,10 @@ type
     class function NewSQLServerConnectionDef(const AServer, ADatabase, AUserName, APassword: String; const AAsDefault: Boolean = True; const ASynchroStrategy_Client: IioSynchroStrategy_Client = nil;
       const APersistent: Boolean = False; const APooled: Boolean = False; const AConnectionName: String = IO_CONNECTIONDEF_DEFAULTNAME): IIoStanConnectionDef;
 {$ENDIF}
+//Start_FP
+    class function NewPostgreSQLConnectionDef(const AServer, ADatabase, AUserName, APassword: String; const AAsDefault: Boolean = True; const ASynchroStrategy_Client: IioSynchroStrategy_Client = nil;
+      const APersistent: Boolean = False; const APooled: Boolean = False; const AConnectionName: String = IO_CONNECTIONDEF_DEFAULTNAME): IIoStanConnectionDef;
+//Stop_FP
     class function NewMySQLConnectionDef(const AServer, ADatabase, AUserName, APassword, ACharSet: String; const AAsDefault: Boolean = True; const ASynchroStrategy_Client: IioSynchroStrategy_Client = nil;
       const APersistent: Boolean = False; const APooled: Boolean = False; const AConnectionName: String = IO_CONNECTIONDEF_DEFAULTNAME): IIoStanConnectionDef;
     class procedure NewHttpConnection(const ABaseURL: String; const AAsDefault: Boolean = True; const ASynchroStrategy_Client: IioSynchroStrategy_Client = nil; const APersistent: Boolean = True;
@@ -587,6 +591,30 @@ begin
     _Unlock;
   end;
 end;
+
+//Start_FP
+class function TioConnectionManager.NewPostgreSQLConnectionDef(const AServer,
+  ADatabase, AUserName, APassword: String; const AAsDefault: Boolean;
+  const ASynchroStrategy_Client: IioSynchroStrategy_Client; const APersistent,
+  APooled: Boolean; const AConnectionName: String): IIoStanConnectionDef;
+begin
+  _Lock;
+  try
+    Result := Self.NewCustomConnectionDef(AConnectionName, APooled, AAsDefault);
+    Result.Params.DriverID := 'PG'; //DriverID = 'PG' e' il DriverID FireDAC per PostgreSQL. Assicurarsi di avere FireDAC.Phys.PG nel progetto.
+    Result.Params.Values['Server'] := AServer;
+    Result.Params.Database := ADatabase;
+    Result.Params.UserName := AUserName;
+    Result.Params.Password := APassword;
+    // Add the connection type to the internal container
+    FConnectionManagerContainer.AddOrSetValue(AConnectionName,
+      TioConnectionInfo.Create(AConnectionName, ctPostgreSQL, APersistent,
+        kgtAfterInsert, ASynchroStrategy_Client));
+  finally
+    _Unlock;
+  end;
+end;
+//Stop_FP
 
 class procedure TioConnectionManager.NewHttpConnection(const ABaseURL: String; const AAsDefault: Boolean = True; const ASynchroStrategy_Client: IioSynchroStrategy_Client = nil; const APersistent: Boolean = True;
       const AConnectionName: String = IO_CONNECTIONDEF_DEFAULTNAME);

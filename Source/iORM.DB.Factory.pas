@@ -80,6 +80,9 @@ uses
 {$IFNDEF ioDelphiProfessional}
   iORM.DB.MSSqlServer.SqlGenerator, iORM.DB.MSSqlServer.SqlDataConverter,
 {$ENDIF}
+//Start_FP
+  iORM.DB.PostgreSQL.SqlGenerator, iORM.DB.PostgreSQL.SqlDataConverter,
+//Stop_FP
   iORM.DB.SQL.Destination, FireDAC.Stan.Intf, iORM.Http.Connection, iORM.DB.Script, iORM.DB.Query.FireDAC;
 
 { TioDbBuilder }
@@ -224,6 +227,10 @@ begin
     ctSQLServer:
       Result := TioSqlDataConverterMSSqlServer;
 {$ENDIF}
+//Start_FP
+    ctPostgreSQL:
+      Result := TioSqlDataConverterPostgreSQL;
+//Stop_FP
   else
     raise EioGenericException.Create(ClassName + ': Connection type not found (SqlDataConverter).');
   end;
@@ -250,6 +257,10 @@ begin
     ctSQLServer:
       Result := TioSqlGeneratorMSSqlServer;
 {$ENDIF}
+//Start_FP
+    ctPostgreSQL:
+      Result := TioSqlGeneratorPostgreSQL;
+//Stop_FP
   else
     raise EioGenericException.Create(ClassName + ': Connection type not found (SqlGenerator).');
   end;
